@@ -155,14 +155,13 @@ export function PipelineChart({ deals }) {
     <div className="w-full">
       <h2 className="text-xl font-bold mb-4">提案パイプライン 着地見込状況</h2>
       <div className="flex">
-        <div className="w-1/3 pr-2" style={{ height: '400px' }}>
+        <div className="w-1/5 pr-2" style={{ height: '400px' }}>
           <canvas ref={totalChartRef} />
         </div>
-        <div className="w-2/3 pl-2" style={{ height: '400px' }}>
+        <div className="w-4/5 pl-2" style={{ height: '400px' }}>
           <canvas ref={phaseChartRef} />
         </div>
       </div>
     </div>
   );
 }
-
