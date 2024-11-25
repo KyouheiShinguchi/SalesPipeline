@@ -71,33 +71,16 @@ export function PipelineChart({ deals }) {
       }
     });
 
-    const phaseData = [
-      {
-        label: '案件発掘',
-        backgroundColor: 'rgba(255, 159, 64, 0.6)',
-        data: deals.filter(d => d.phase === 'discovery').map(deal => deal.amount * deal.probability),
-      },
-      {
-        label: '提案中',
-        backgroundColor: 'rgba(255, 205, 86, 0.6)',
-        data: deals.filter(d => d.phase === 'proposal').map(deal => deal.amount * deal.probability),
-      },
-      {
-        label: '受注',
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        data: deals.filter(d => d.phase === 'won').map(deal => deal.amount * deal.probability),
-      },
-      {
-        label: '失注',
-        backgroundColor: 'rgba(255, 99, 132, 0.6)',
-        data: deals.filter(d => d.phase === 'lost').map(deal => deal.amount * deal.probability),
-      }
-    ];
+    const phaseData = deals.map(deal => ({
+      label: deal.name,
+      backgroundColor: 'rgba(75, 192, 192, 0.6)',
+      data: [deal.amount * deal.probability],
+    }));
 
     phaseChartInstance.current = new Chart(phaseCtx, {
       type: 'bar',
       data: {
-        labels: ['案件発掘', '提案中', '受注', '失注'],
+        labels: deals.map(deal => deal.name),
         datasets: phaseData
       },
       options: {
@@ -113,8 +96,7 @@ export function PipelineChart({ deals }) {
             callbacks: {
               label: function(context) {
                 const dealIndex = context.dataIndex;
-                const phase = context.dataset.label;
-                const deal = deals.find(d => d.phase.toLowerCase() === phase.toLowerCase() && d.amount * d.probability === context.parsed.y);
+                const deal = deals[dealIndex];
                 return deal ? `${deal.name}: ${context.parsed.y.toFixed(2)}` : `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
               }
             }
