@@ -18,7 +18,6 @@ export function PipelineChart({ deals }) {
     const totalCtx = totalChartRef.current.getContext('2d');
     const phaseCtx = phaseChartRef.current.getContext('2d');
 
-    // Calculate totals for each phase
     const phaseTotals = {
       discovery: deals.filter(d => d.phase === 'discovery')
         .reduce((acc, deal) => acc + deal.amount * deal.probability, 0),
@@ -30,7 +29,6 @@ export function PipelineChart({ deals }) {
         .reduce((acc, deal) => acc + deal.amount * deal.probability, 0),
     };
 
-    // Total Chart
     totalChartInstance.current = new Chart(totalCtx, {
       type: 'bar',
       data: {
@@ -57,31 +55,22 @@ export function PipelineChart({ deals }) {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: {
-            stacked: true,
-          },
-          y: {
-            stacked: true,
-            beginAtZero: true,
-          }
+          x: { stacked: true },
+          y: { stacked: true, beginAtZero: true }
         },
         plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-          },
+          legend: { display: true, position: 'top' },
           tooltip: {
             callbacks: {
               label: function(context) {
                 return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
               }
             }
-          },
-        },
+          }
+        }
       }
     });
 
-    // Phase Chart
     const phaseData = [
       {
         label: '案件発掘',
@@ -115,18 +104,11 @@ export function PipelineChart({ deals }) {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: {
-            stacked: true,
-          },
-          y: {
-            stacked: true,
-            beginAtZero: true,
-          }
+          x: { stacked: true },
+          y: { stacked: true, beginAtZero: true }
         },
         plugins: {
-          legend: {
-            display: false,
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
               label: function(context) {
@@ -136,8 +118,8 @@ export function PipelineChart({ deals }) {
                 return deal ? `${deal.name}: ${context.parsed.y.toFixed(2)}` : `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
               }
             }
-          },
-        },
+          }
+        }
       }
     });
 
@@ -152,13 +134,15 @@ export function PipelineChart({ deals }) {
   }, [deals]);
 
   return (
-    <div className="w-full">
-      <h2 className="text-xl font-bold mb-4">提案パイプライン 着地見込状況</h2>
-      <div className="flex">
-        <div className="w-1/5 pr-2" style={{ height: '400px' }}>
+    <div style={{ width: '100%' }}>
+      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '16px' }}>
+        提案パイプライン 着地見込状況
+      </h2>
+      <div style={{ display: 'flex', width: '100%' }}>
+        <div style={{ width: '20%', paddingRight: '8px', height: '400px' }}>
           <canvas ref={totalChartRef} />
         </div>
-        <div className="w-4/5 pl-2" style={{ height: '400px' }}>
+        <div style={{ width: '80%', paddingLeft: '8px', height: '400px' }}>
           <canvas ref={phaseChartRef} />
         </div>
       </div>
