@@ -75,22 +75,34 @@ export function PipelineChart({ deals }) {
       {
         label: '案件発掘',
         backgroundColor: 'rgba(255, 159, 64, 0.6)',
-        data: deals.filter(d => d.phase === 'discovery').map(deal => deal.amount * deal.probability),
+        data: deals.filter(d => d.phase === 'discovery').map(deal => ({
+          x: deal.name,
+          y: deal.amount * deal.probability
+        })),
       },
       {
         label: '提案中',
         backgroundColor: 'rgba(255, 205, 86, 0.6)',
-        data: deals.filter(d => d.phase === 'proposal').map(deal => deal.amount * deal.probability),
+        data: deals.filter(d => d.phase === 'proposal').map(deal => ({
+          x: deal.name,
+          y: deal.amount * deal.probability
+        })),
       },
       {
         label: '受注',
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        data: deals.filter(d => d.phase === 'won').map(deal => deal.amount * deal.probability),
+        data: deals.filter(d => d.phase === 'won').map(deal => ({
+          x: deal.name,
+          y: deal.amount * deal.probability
+        })),
       },
       {
         label: '失注',
         backgroundColor: 'rgba(255, 99, 132, 0.6)',
-        data: deals.filter(d => d.phase === 'lost').map(deal => deal.amount * deal.probability),
+        data: deals.filter(d => d.phase === 'lost').map(deal => ({
+          x: deal.name,
+          y: deal.amount * deal.probability
+        })),
       }
     ];
 
@@ -114,7 +126,7 @@ export function PipelineChart({ deals }) {
               label: function(context) {
                 const dealIndex = context.dataIndex;
                 const phase = context.dataset.label;
-                const deal = deals.find(d => d.phase.toLowerCase() === phase.toLowerCase() && d.amount * d.probability === context.parsed.y);
+                const deal = deals.find(d => d.phase.toLowerCase() === phase.toLowerCase() && d.name === context.label);
                 return deal ? `${deal.name}: ${context.parsed.y.toFixed(2)}` : `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
               }
             }
