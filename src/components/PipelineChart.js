@@ -18,6 +18,7 @@ export function PipelineChart({ deals }) {
     const totalCtx = totalChartRef.current.getContext('2d');
     const phaseCtx = phaseChartRef.current.getContext('2d');
 
+    // Calculate totals for each phase
     const phaseTotals = {
       discovery: deals.filter(d => d.phase === 'discovery')
         .reduce((acc, deal) => acc + deal.amount * deal.probability, 0),
@@ -29,6 +30,7 @@ export function PipelineChart({ deals }) {
         .reduce((acc, deal) => acc + deal.amount * deal.probability, 0),
     };
 
+    // Total Chart
     totalChartInstance.current = new Chart(totalCtx, {
       type: 'bar',
       data: {
@@ -55,49 +57,58 @@ export function PipelineChart({ deals }) {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: { stacked: true },
-          y: { stacked: true, beginAtZero: true }
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true,
+            beginAtZero: true,
+          }
         },
         plugins: {
-          legend: { display: true, position: 'top' },
+          legend: {
+            display: true,
+            position: 'top',
+          },
           tooltip: {
             callbacks: {
               label: function(context) {
                 return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
               }
             }
-          }
-        }
+          },
+        },
       }
     });
 
+    // Phase Chart
     const phaseData = [
-      {
-        label: '案件発掘',
-        backgroundColor: 'rgba(255, 159, 64, 0.6)',
-        data: deals.filter(d => d.phase === 'discovery').map(deal => deal.amount * deal.probability),
-      },
-      {
-        label: '提案中',
-        backgroundColor: 'rgba(255, 205, 86, 0.6)',
-        data: deals.filter(d => d.phase === 'proposal').map(deal => deal.amount * deal.probability),
-      },
-      {
-        label: '受注',
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        data: deals.filter(d => d.phase === 'won').map(deal => deal.amount * deal.probability),
-      },
-      {
-        label: '失注',
-        backgroundColor: 'rgba(255, 99, 132, 0.6)',
-        data: deals.filter(d => d.phase === 'lost').map(deal => deal.amount * deal.probability),
-      }
-    ];
+      '案件発掘', '提案中', '受注', '失注'
+    ].map(phase => ({
+      label: phase,
+      backgroundColor: {
+        '案件発掘': 'rgba(255, 159, 64, 0.6)',
+        '提案中': 'rgba(255, 205, 86, 0.6)',
+        '受注': 'rgba(75, 192, 192, 0.6)',
+        '失注': 'rgba(255, 99, 132, 0.6)'
+      }[phase],
+      data: deals.filter(d => {
+        switch(phase) {
+          case '案件発掘': return d.phase === 'discovery';
+          case '提案中': return d.phase === 'proposal';
+          case '受注': return d.phase === 'won';
+          case '失注': return d.phase === 'lost';
+        }
+      }).map(deal => ({
+        x: phase,
+        y: deal.amount * deal.probability,
+        name: deal.name
+      }))
+    }));
 
     phaseChartInstance.current = new Chart(phaseCtx, {
       type: 'bar',
       data: {
-        labels: ['案件発掘', '提案中', '受注', '失注'],
         datasets: phaseData
       },
       options: {
@@ -112,10 +123,7 @@ export function PipelineChart({ deals }) {
           tooltip: {
             callbacks: {
               label: function(context) {
-                const dealIndex = context.dataIndex;
-                const phase = context.dataset.label;
-                const deal = deals.find(d => d.phase.toLowerCase() === phase.toLowerCase() && d.amount * d.probability === context.parsed.y);
-                return deal ? `${deal.name}: ${context.parsed.y.toFixed(2)}` : `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
+                return `${context.raw.name}: ${context.parsed.y.toFixed(2)}`;
               }
             }
           }
@@ -149,3 +157,4 @@ export function PipelineChart({ deals }) {
     </div>
   );
 }
+
